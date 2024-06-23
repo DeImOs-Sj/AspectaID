@@ -196,6 +196,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { CornerDownLeft } from "lucide-react";
+import axios from "axios";
 
 const StoreFiles = () => {
   const [query, setQuery] = useState("");
@@ -205,6 +206,44 @@ const StoreFiles = () => {
   const [polling, setPolling] = useState<NodeJS.Timeout | null>(null);
 
   console.log(`query= ${query}, runId= ${runId}, messages= ${messages}`);
+
+  const response = fetch("/chat/conversational_rag_chat", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      question: "text",
+      knowledge_source_id: "text",
+    }),
+  });
+  const data = response;
+
+  async function main(prompt: string) {
+    console.log("Prompt:", prompt);
+    main("Can you figure out how to make a chatbot?");
+
+    try {
+      // Construct the request payload
+      const payload = {
+        question: prompt,
+        chat_history: [],
+        knowledge_source_id: "<model_id>", // replace with your model id
+      };
+
+      // Set the headers
+      const headers = {
+        "x-api-key": process.env.FLOCK_BOT_API_KEY, // Ensure API key is set in .env
+      };
+
+      // Send POST request using axios
+
+      // Output the response data
+      console.log(response);
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
 
   const handleRunAgent = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
