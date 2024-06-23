@@ -7,12 +7,14 @@ import { Label } from "@/components/ui/label";
 import { CornerDownLeft } from "lucide-react";
 import { getApiKey } from "../Components/LighthouseSdkAPi";
 import { useFileContext } from "../Components/FileContext";
+import Form from "../Components/Form";
 import abi from "../../utils/DealClient.json";
 import Web3 from "web3";
+import HFForm from "../Components/HuggingFaceForm";
 
 const StoreFiles = () => {
   const [query, setQuery] = useState("");
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<(string | JSX.Element)[]>([]);
   const [showUploadButton, setShowUploadButton] = useState(false);
   const [uploadedFileHash, setUploadedFileHash] = useState<string | null>(null);
   const { setFileHash } = useFileContext();
@@ -34,6 +36,8 @@ const StoreFiles = () => {
   const [carSize, setCarSize] = useState(2061);
   const [skipIpniAnnounce, setSkipIpniAnnounce] = useState(false);
   const [removeUnsealedCopy, setRemoveUnsealedCopy] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [hfForm, setHFForm] = useState(false);
   // console.log(setFileHash);
   const address = "0xfd562f20e65e0d87598cda7f2a1ac348a008fa0d";
 
@@ -48,60 +52,6 @@ const StoreFiles = () => {
       console.error("Missing total or uploaded in progressData:", progressData);
     }
   };
-
-  // const makeDealProposal = async (e: any) => {
-  //   e.preventDefault();
-
-  //   const extraParamsV1 = {
-  //     location_ref: locationRef,
-  //     car_size: carSize,
-  //     skip_ipni_announce: skipIpniAnnounce,
-  //     remove_unsealed_copy: removeUnsealedCopy,
-  //   };
-
-  //   const DealRequestStruct = {
-  //     piece_cid: web3.utils.hexToBytes(pieceCid),
-  //     piece_size: pieceSize,
-  //     verified_deal: verifiedDeal,
-  //     label: label,
-  //     start_epoch: startEpoch,
-  //     end_epoch: endEpoch,
-  //     storage_price_per_epoch: storagePricePerEpoch,
-  //     provider_collateral: providerCollateral,
-  //     client_collateral: clientCollateral,
-  //     extra_params_version: extraParamsVersion,
-  //     extra_params: extraParamsV1,
-  //   };
-
-  //   if (window.ethereum) {
-  //     window.web3 = new Web3(window.ethereum);
-  //     await window.ethereum.enable();
-  //   } else if (window.web3) {
-  //     window.web3 = new Web3(window.web3.currentProvider);
-  //   } else {
-  //     console.log(
-  //       "Non-Ethereum browser detected. You should consider trying MetaMask!"
-  //     );
-  //     return;
-  //   }
-
-  //   const web3 = window.web3;
-  //   const contract = new web3.eth.Contract(abi, address);
-  //   const maxIterations = 10;
-
-  //   try {
-  //     const accounts = await web3.eth.getAccounts();
-  //     const account = accounts[0];
-
-  //     const result = await contract.methods
-  //       .makeDealProposal([DealRequestStruct])
-  //       .send({ from: account });
-
-  //     console.log(`Agent run successfully, hash set to: ${result}`);
-  //   } catch (error) {
-  //     console.error("Error running agent:", error);
-  //   }
-  // };
 
   const uploadFile = async (file: File) => {
     try {
@@ -156,12 +106,20 @@ const StoreFiles = () => {
         query.trim().toLowerCase() === "can you help me to upload the file?"
       ) {
         setShowUploadButton(true);
-        setMessages(() => ["Sure, please upload your file below."]);
+        setMessages((prevMessages) => ["Sure, please upload your file below."]);
       } else if (
-        query.trim().toLowerCase() === "can you deploy a training node?"
+        query.trim().toLowerCase() ===
+        "can you help to deploy training node for gemma model?"
       ) {
-        setShowUploadButton(true);
-        setMessages(() => ["Sure, please upload your details ."]);
+        setShowForm(true);
+        setMessages((prevMessages) => ["Yes, sure. Fill out this form."]);
+      } else if (
+        query.trim().toLowerCase() === "can you submit model to hugging face?"
+      ) {
+        setHFForm(true);
+        setMessages((prevMessages) => [
+          "Yes, sure. Fill can you fill out this form.",
+        ]);
       } else {
         setMessages((prevMessages) => [...prevMessages, query]);
       }
@@ -194,7 +152,18 @@ const StoreFiles = () => {
             />
           </div>
         )}
+        {showForm && (
+          <div className="form-container mt-4 p-4 rounded-sm bg-[#151518] h-[30rem] w-[37rem]">
+            <Form key="form" />
+          </div>
+        )}
+        {hfForm && (
+          <div className="form-container mt-4 p-4 rounded-sm bg-[#151518] h-[30rem] w-[37rem]">
+            <HFForm key="form" />
+          </div>
+        )}
       </div>
+
       <form
         className="fixed bottom-0 left-0 right-0 mb-[1rem] text-center p-4 overflow-hidden rounded-lg mx-auto w-[80%] border  focus-within:ring-1  focus-within:ring-blue-50"
         onSubmit={(e) => {

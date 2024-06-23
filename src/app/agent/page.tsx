@@ -233,7 +233,7 @@ const StoreFiles = () => {
 
       // Set the headers
       const headers = {
-        "x-api-key": process.env.FLOCK_BOT_API_KEY, // Ensure API key is set in .env
+        "x-api-key": process.env.NEXT_PUBLIC_FLOCK_BOT_API_KEY, // Ensure API key is set in .env
       };
 
       // Send POST request using axios
