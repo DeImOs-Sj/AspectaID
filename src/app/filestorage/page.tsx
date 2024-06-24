@@ -41,18 +41,6 @@ const StoreFiles = () => {
   const [hfForm, setHFForm] = useState(false);
   // console.log(setFileHash);
   const address = "0xfd562f20e65e0d87598cda7f2a1ac348a008fa0d";
-  const web3 = new Web3();
-
-  const { taskId } = res; //return by Transgate
-
-  const taskIdHex = Web3.utils.stringToHex(taskId);
-  const schemaIdHex = Web3.utils.stringToHex(schemaId);
-
-  const encodeParams = web3.eth.abi.encodeParameters(
-    ["bytes32", "bytes32", "address"],
-    [taskIdHex, schemaIdHex, validatorAddress]
-  );
-  const paramsHash = Web3.utils.soliditySha3(encodeParams);
 
   const progressCallback = (progressData: any) => {
     if (
@@ -263,6 +251,7 @@ const StoreFiles = () => {
             Send Message
             <CornerDownLeft className="size-3.5" />
           </Button>
+          {/* <Button onClick={verify}>Verify</Button> */}
         </div>
       </form>
     </div>
