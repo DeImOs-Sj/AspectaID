@@ -1,0 +1,34 @@
+{
+  "issuer": "Lighthouse Storage",
+  "desc": "A decentralized storage platform allowing users to store and share data securely.",
+  "website": " https://gateway.lighthouse.storage/ipfs/bafkreigtgzzocdx3ypyahxfs3uqchnwujfo5w3kouus63jvzlrfafrr76y",
+  "APIs": [
+    {
+      "host": "www.lighthouse.storage.com",
+      "intercept": {
+        "url": "",
+        "method": "GET",
+        "query": [
+          {
+            "q": "UserStatsContentQuery",
+            "verify": true
+          }
+        ]
+      },
+      "assert": [
+        {
+          "key": "data|viewer|__typename",
+          "value": "Viewer",
+          "operation": "="
+        }
+      ],
+      "nullifier": "data|viewer|uid"
+    }
+  ],
+  "HRCondition": [
+    "Lighthouse Storage Account Ownerr"
+  ],
+  "tips": {
+    "message": "When you successfully access the URL, please ensure the status code is 200 to verify the data retrieval.."
+  }
+}

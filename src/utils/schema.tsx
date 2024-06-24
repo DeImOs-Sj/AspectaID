@@ -1,19 +1,24 @@
 export const schema = {
   issuer: "Lighthouse Storage",
-  desc: "A decentralized storage platform allowing users to store and share data securely.",
+  desc: "A decentralized storage platform allowing users to store and share data securely",
   website: "https://lighthouse.storage",
   APIs: [
     {
       host: "gateway.lighthouse.storage",
       intercept: {
-        url: "ipfs/bafkreifql4h5ndxflc6bfilmqrf43h3w554ugqqh6ad2cyjbbtauyltt34",
+        url: "https://gateway.lighthouse.storage/ipfs/bafkreigtgzzocdx3ypyahxfs3uqchnwujfo5w3kouus63jvzlrfafrr76y",
         method: "GET",
-        query: [],
+        query: [
+          {
+            q: "UserStatsContentQuery",
+            verify: false,
+          },
+        ],
       },
       assert: [
         {
-          key: "status",
-          value: "200",
+          key: "data|viewer|__typename",
+          value: "Viewer",
           operation: "=",
         },
       ],
