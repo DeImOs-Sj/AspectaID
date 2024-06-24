@@ -11,6 +11,7 @@ import Form from "../Components/Form";
 import abi from "../../utils/DealClient.json";
 import Web3 from "web3";
 import HFForm from "../Components/HuggingFaceForm";
+import TransgateConnect from "@zkpass/transgate-js-sdk";
 
 const StoreFiles = () => {
   const [query, setQuery] = useState("");
@@ -40,6 +41,18 @@ const StoreFiles = () => {
   const [hfForm, setHFForm] = useState(false);
   // console.log(setFileHash);
   const address = "0xfd562f20e65e0d87598cda7f2a1ac348a008fa0d";
+  const web3 = new Web3();
+
+  const { taskId } = res; //return by Transgate
+
+  const taskIdHex = Web3.utils.stringToHex(taskId);
+  const schemaIdHex = Web3.utils.stringToHex(schemaId);
+
+  const encodeParams = web3.eth.abi.encodeParameters(
+    ["bytes32", "bytes32", "address"],
+    [taskIdHex, schemaIdHex, validatorAddress]
+  );
+  const paramsHash = Web3.utils.soliditySha3(encodeParams);
 
   const progressCallback = (progressData: any) => {
     if (
@@ -50,6 +63,67 @@ const StoreFiles = () => {
       const uploaded = Number(progressData.uploaded);
     } else {
       console.error("Missing total or uploaded in progressData:", progressData);
+    }
+  };
+
+  const verify = async () => {
+    try {
+      // The appid of the project created in dev center
+      const appid = "4bd6608d-8293-40d7-8634-59dddb05396a";
+
+      // Create the connector instance
+      const connector = new TransgateConnect(appid);
+
+      // Check if the TransGate extension is installed
+      // If it returns false, please prompt to install it from chrome web store
+      const isAvailable = await connector.isTransgateAvailable();
+
+      if (isAvailable) {
+        // The schema id of the project
+        const schemaId = "61f5b1e216c442509233bb6ba28f8be5";
+
+        // Launch the process of verification
+        // This method can be invoked in a loop when dealing with multiple schemas
+        const res = await connector.launch(schemaId);
+
+        // verifiy the res onchain/offchain based on the requirement
+      } else {
+        console.log("Please install TransGate");
+      }
+    } catch (error) {
+      console.log("transgate error", error);
+    }
+  };
+
+  const generate = async (schemaId: string, appid: string) => {
+    try {
+      // The appid of the project created in dev center
+      const appid = "4bd6608d-8293-40d7-8634-59dddb05396a";
+
+      // Create the connector instance
+      const connector = new TransgateConnect(appid);
+
+      // Check if the TransGate extension is installed
+      // If it returns false, please prompt to install it from chrome web store
+      const isAvailable = await connector.isTransgateAvailable();
+
+      if (isAvailable) {
+        // The schema id of the project
+        const schemaId = "61f5b1e216c442509233bb6ba28f8be5";
+
+        // Launch the process of verification
+        // This method can be invoked in a loop when dealing with multiple schemas
+        const res = await connector.launch(schemaId);
+
+        //If you want to send the result to the blockchain, please add the wallet address as the second parameter.
+        //const res = await connector.launch(schemaId, address)
+
+        // verifiy the res onchain/offchain based on the requirement
+      } else {
+        console.log("Please install TransGate");
+      }
+    } catch (error) {
+      console.log("transgate error", error);
     }
   };
 
