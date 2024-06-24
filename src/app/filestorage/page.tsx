@@ -12,6 +12,7 @@ import abi from "../../utils/DealClient.json";
 import Web3 from "web3";
 import HFForm from "../Components/HuggingFaceForm";
 import TransgateConnect from "@zkpass/transgate-js-sdk";
+import { schema } from "../../utils/schema";
 
 const StoreFiles = () => {
   const [query, setQuery] = useState("");
@@ -54,6 +55,18 @@ const StoreFiles = () => {
     }
   };
 
+  const handleDownload = () => {
+    const fileData = JSON.stringify(schema, null, 2);
+    const blob = new Blob([fileData], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "schema.json";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const verify = async () => {
     try {
       // The appid of the project created in dev center
@@ -71,10 +84,34 @@ const StoreFiles = () => {
         const schemaId = "61f5b1e216c442509233bb6ba28f8be5";
 
         // Launch the process of verification
-        // This method can be invoked in a loop when dealing with multiple schemas
         const res = await connector.launch(schemaId);
 
-        // verifiy the res onchain/offchain based on the requirement
+        // Prepare data for verification
+        const verificationData = {
+          taskId: res.taskId,
+          schemaId,
+          validatorAddress: "your_validator_address", // Replace with actual validator address
+          validatorSignature: res.validatorSignature,
+          recipient: res.recipient,
+          uHash: res.uHash,
+          publicFieldsHash: res.publicFieldsHash,
+        };
+
+        // Call the backend endpoint for verification
+        const response = await fetch("/verify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(verificationData),
+        });
+
+        const result = await response.json();
+        if (result.isValid) {
+          console.log("Verification successful");
+        } else {
+          console.log("Verification failed");
+        }
       } else {
         console.log("Please install TransGate");
       }
@@ -85,28 +122,41 @@ const StoreFiles = () => {
 
   const generate = async (schemaId: string, appid: string) => {
     try {
-      // The appid of the project created in dev center
       const appid = "4bd6608d-8293-40d7-8634-59dddb05396a";
 
-      // Create the connector instance
       const connector = new TransgateConnect(appid);
 
-      // Check if the TransGate extension is installed
-      // If it returns false, please prompt to install it from chrome web store
       const isAvailable = await connector.isTransgateAvailable();
 
       if (isAvailable) {
-        // The schema id of the project
         const schemaId = "61f5b1e216c442509233bb6ba28f8be5";
 
-        // Launch the process of verification
-        // This method can be invoked in a loop when dealing with multiple schemas
         const res = await connector.launch(schemaId);
 
-        //If you want to send the result to the blockchain, please add the wallet address as the second parameter.
-        //const res = await connector.launch(schemaId, address)
+        const verificationData = {
+          taskId: res.taskId,
+          schemaId,
+          validatorAddress: "your_validator_address",
+          validatorSignature: res.validatorSignature,
+          recipient: res.recipient,
+          uHash: res.uHash,
+          publicFieldsHash: res.publicFieldsHash,
+        };
 
-        // verifiy the res onchain/offchain based on the requirement
+        const response = await fetch("/verify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(verificationData),
+        });
+
+        const result = await response.json();
+        if (result.isValid) {
+          console.log("Verification successful");
+        } else {
+          console.log("Verification failed");
+        }
       } else {
         console.log("Please install TransGate");
       }
@@ -202,7 +252,7 @@ const StoreFiles = () => {
           ))}
         </ul>
         {showUploadButton && (
-          <div className="upload-container mt-4 p-4  rounded-sm bg-[#151518] text-center">
+          <div className="upload-container mt-4 p-4  rounded-sm  text-center">
             <input
               type="file"
               onChange={(e) => {
@@ -210,8 +260,9 @@ const StoreFiles = () => {
                   uploadFile(e.target.files[0]);
                 }
               }}
-              className="upload-input text-white bg-background"
+              className="upload-input text-white "
             />
+            <Button onClick={handleDownload}>Generate Schema</Button>
           </div>
         )}
         {showForm && (
@@ -251,7 +302,6 @@ const StoreFiles = () => {
             Send Message
             <CornerDownLeft className="size-3.5" />
           </Button>
-          {/* <Button onClick={verify}>Verify</Button> */}
         </div>
       </form>
     </div>
