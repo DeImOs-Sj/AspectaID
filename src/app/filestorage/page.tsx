@@ -13,6 +13,7 @@ import Web3 from "web3";
 import HFForm from "../Components/HuggingFaceForm";
 import TransgateConnect from "@zkpass/transgate-js-sdk";
 import { schema } from "../../utils/schema";
+import axios from "axios";
 
 const StoreFiles = () => {
   const [query, setQuery] = useState("");
@@ -143,7 +144,7 @@ const StoreFiles = () => {
           publicFieldsHash: res.publicFieldsHash,
         };
 
-        const response = await fetch("/verify", {
+        const response = await fetch("/api/verify", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -162,6 +163,31 @@ const StoreFiles = () => {
       }
     } catch (error) {
       console.log("transgate error", error);
+    }
+  };
+
+  const getLLMResponse = async (prompt: string) => {
+    try {
+      const payload = {
+        question: prompt,
+        chat_history: [],
+      };
+
+      const headers = {
+        "x-api-key": process.env.NEXT_PUBLIC_FLOCK_BOT_API_KEY,
+        "Content-Type": "application/json",
+      };
+
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_FLOCK_BOT_CHAT}/chat/conversational_rag_chat`,
+        payload,
+        { headers }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      return { error: "Error fetching suggestions" };
     }
   };
 
@@ -211,35 +237,6 @@ const StoreFiles = () => {
       ]);
     }
   };
-
-  const handleSendMessage = () => {
-    setTimeout(() => {
-      if (
-        query.trim().toLowerCase() === "can you help me to upload the file?"
-      ) {
-        setShowUploadButton(true);
-        setMessages((prevMessages) => ["Sure, please upload your file below."]);
-      } else if (
-        query.trim().toLowerCase() ===
-        "can you help to deploy training node for gemma model?"
-      ) {
-        setShowForm(true);
-        setMessages((prevMessages) => ["Yes, sure. Fill out this form."]);
-      } else if (
-        query.trim().toLowerCase() === "can you submit model to hugging face?"
-      ) {
-        setHFForm(true);
-        setMessages((prevMessages) => [
-          "Yes, sure. Fill can you fill out this form.",
-        ]);
-      } else {
-        setMessages((prevMessages) => [...prevMessages, query]);
-      }
-      setQuery("");
-    }, 2000);
-  };
-
-  // bg-[#151518]
 
   return (
     <div className="container mx-auto mt-4 ">
@@ -297,7 +294,7 @@ const StoreFiles = () => {
           <Button
             size="sm"
             className="ml-auto gap-1.5"
-            onClick={handleSendMessage}
+            onClick={getLLMResponse}
           >
             Send Message
             <CornerDownLeft className="size-3.5" />

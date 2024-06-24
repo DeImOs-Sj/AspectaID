@@ -1,7 +1,7 @@
 export const schema = {
   issuer: "Lighthouse Storage",
   desc: "A decentralized storage platform allowing users to store and share data securely",
-  website: "https://lighthouse.storage",
+  website: "    https://lighthouse.storage",
   APIs: [
     {
       host: "gateway.lighthouse.storage",
