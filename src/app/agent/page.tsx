@@ -71,7 +71,7 @@ const StoreFiles = () => {
 
       const newRunId = result.events.AgentRunCreated.returnValues.runId;
       setRunId(newRunId);
-      setLoading(true); // Set loading state to true
+      setLoading(true);
       console.log(`Agent run successfully, runId set to: ${newRunId}`);
     } catch (error) {
       console.error("Error running agent:", error);

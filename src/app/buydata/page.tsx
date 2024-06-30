@@ -18,23 +18,7 @@ const BuyDataPage = () => {
   const { fileHash } = useFileContext();
   const [deploying, setDeploying] = useState(false);
 
-  const handleDeploy = () => {
-    // Simulate deployment action
-    setDeploying(true);
-
-    // Simulate asynchronous action (e.g., API call, script execution)
-    setTimeout(() => {
-      // Reset deployment state after 3 seconds (simulating completion)
-      setDeploying(false);
-      alert("Deployment action simulated successfully!");
-    }, 3000); // Change 3000 to actual delay or remove for instant action
-  };
-
   return (
-    //     model_name: string;
-    // short_description: string;
-    // provider_name: string;
-    // long_description: string;
     <div className="flex flex-col justify-center items-center">
       <h1 className="text-2xl font-bold">Get Precision Data Models</h1>
       <br />

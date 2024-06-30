@@ -70,7 +70,6 @@ const StoreFiles = () => {
 
   const verify = async () => {
     try {
-      // The appid of the project created in dev center
       const appid = "4bd6608d-8293-40d7-8634-59dddb05396a";
 
       // Create the connector instance
